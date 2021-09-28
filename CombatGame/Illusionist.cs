@@ -26,7 +26,7 @@ namespace CombatGame
         {
             if (IsSpecialSkillUsed())
             {
-                if (target.IsSpecialSkillUsed())
+                if (target != null && target.IsSpecialSkillUsed())
                 {
                     target.Hp -= 3;
                     Console.WriteLine($"{target.Name} se mange un coup bas de la pars de l'illusionist et perd 3 points de vie");

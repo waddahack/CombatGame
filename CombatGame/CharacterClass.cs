@@ -8,7 +8,7 @@ using System.Threading;
 namespace CombatGame
 {
     // Class Character
-    public abstract class Character
+    public abstract class Character : Selectionnable
     {
         // Nom de la classe
         public enum States

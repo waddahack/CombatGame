@@ -1,0 +1,5 @@
+Faire contoure display game
+
+Fixer le Tank (increvable + sa comp spé)
+
+Pouvoir healer autre que soi avec le healer

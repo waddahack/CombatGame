@@ -10,6 +10,8 @@ namespace CombatGame
 {
     class Program
     {
+
+        static int GAMEHEIGHT, LINESIZE = 60;
         static void Main(string[] args)
         {
             // Enregistre les personnages de chaque équipes
@@ -21,44 +23,29 @@ namespace CombatGame
             Character choice;
 
             // Equipe 1 choisit ses perso
-            Console.WriteLine("Equipe 1 choisit sont équipe...");
+            Console.Clear();
             do {
-                Console.Clear();
-                if (team1.Count > 0)
-                {
-                    Console.Write("Ton équipe : ");
-                    foreach (Character perso in team1)
-                        Console.Write("  " + perso.Name);
-                    Console.WriteLine();
-                }
-
-                choice = PlayerCharacterChoice();
+                choice = PlayerCharacterChoice(team1, 1);
                 if (choice is Character)
                     team1.Add(choice);
             }  while (choice != null || team1.Count < 1);
 
-            Console.WriteLine("");
+            // L'IA choisit sont équipe
             if (versusAI)
-            {
-                // L'IA choisit sont équipe
-                Console.WriteLine("L'ordi choisit sont équipe...");
                 for (int i = 0; i < team1.Count; i++)
                     team2.Add(AICharacterChoice());
-            }
+            // Equipe 2 choisit ses perso
             else
             {
-                // Equipe 2 choisit ses perso
-                Console.WriteLine("Equipe 2 choisit sont équipe...");
                 do
                 {
-                    choice = PlayerCharacterChoice();
+                    choice = PlayerCharacterChoice(team2, 2);
                     if (choice is Character)
                         team2.Add(choice);
                 } while (choice != null || team2.Count < 1);
             }
 
-            Console.Clear();
-
+            GAMEHEIGHT = 2 + Math.Max(team1.Count, team2.Count) * 2;
             // BOUCLE JEU
             bool endGame = false;
             while (!endGame)
@@ -71,7 +58,7 @@ namespace CombatGame
                 if (versusAI)
                     AiActionChoice(team2, team1);
                 else
-                    PlayerActionChoice(team2, team1);
+                    PlayerActionChoice(team2, team1, true);
 
                 // CALCUL DES CHOIX ET FIN DE TOUR
                 foreach (Character perso in team1)
@@ -82,111 +69,127 @@ namespace CombatGame
                 // CHECK ENDGAME et retire les persos mort des équipes
                 endGame = EndGameCheck(team1, team2);
 
-                Console.WriteLine("");
-                Console.WriteLine("Entrée pour continuer...");
-                Console.ReadLine();
-                Console.Clear();
+                if (versusAI)
+                {
+                    Console.WriteLine("\nEntrée pour continuer...");
+                    Console.ReadLine();
+                }
             }
-
-            Console.WriteLine("FIN");
+            DisplayGame(team1, team2);
+            Console.WriteLine("\nFIN");
             Console.ReadLine();
 
         }
 
         static bool ChoosePlayMode()
         {
-            Console.WriteLine("Comment voulez-vous jouer ?");
-            Console.WriteLine("(1) Joueur VS AI      (2) Joueur VS Joueur");
-            int answer = int.Parse(Console.ReadLine());
-            if (answer == 1) return true;
+            Console.WriteLine("Comment voulez-vous jouer ?\n");
+            List<String> choices = new List<String>();
+            choices.Add("Joueur VS Ordinateur");
+            choices.Add("Joueur VS Joueur");
+            int answer = ArrowChoice(choices, 2);
+            if (answer == 0) return true;
             else return false;
             
         }
 
-        static void DisplayGame(List<Character> team1, List<Character> team2)
+        static void DisplayGame(List<Character> team1, List<Character> team2, int equipe = 1)
         {
-            int lineSize = 60;
             Console.Clear();
-            Console.WriteLine("Equipe 1 :" + String.Concat(Enumerable.Repeat(" ", lineSize - 10)) + "Equipe 2 :\n");
+            Console.WriteLine("Equipe " + equipe + " :" + String.Concat(Enumerable.Repeat(" ", LINESIZE - 10)) + (team2 is null ? "" : "Equipe 2 :") + "\n");
             for (int i = 0; i<team1.Count; i++)
             {
                 Character perso1 = team1[i], perso2;
                 string perso1Info = $"{ perso1.Name} : HP = { perso1.Hp} ATK = { perso1.Dmg} Cooldown = { perso1.SkillCooldown}", perso2Info = "";
-                if (i < team2.Count)
+                if (!(team2 is null) && i < team2.Count)
                 {
                     perso2 = team2[i];
                     perso2Info = $"{perso2.Name} : HP = {perso2.Hp} ATK = {perso2.Dmg} Cooldown = {perso2.SkillCooldown}";
-                    perso1Info += String.Concat(Enumerable.Repeat(" ", lineSize-perso1Info.Length));
+                    perso1Info += String.Concat(Enumerable.Repeat(" ", LINESIZE-perso1Info.Length));
                 }
                 Console.WriteLine(perso1Info + perso2Info + "\n");
             }
         }
 
-        static int ArrowChoice(int nbChoices, int offset)
+        static int ArrowChoice(List<String> choices, int clearIndex, bool team2Playing = false)
         {
-            int choice = 0;
+            int choice = 0, lineWidth = 0;
+            foreach (String c in choices)
+                if (c.Length > lineWidth)
+                    lineWidth = c.Length + 5;
             bool entered = false;
-            string arrow = String.Concat(Enumerable.Repeat(" ", offset / 2 - 2)) + "^^^";
+            string arrow = "<---", noArrow = "    ", displayChoices;
             while (!entered)
             {
-                Console.Write("\r" + String.Concat(Enumerable.Repeat(" ", Console.WindowWidth-5)));
-                Console.Write("\r" + String.Concat(Enumerable.Repeat(" ", offset * 2 * choice)) + arrow);
+                ClearUnder(clearIndex);
+                displayChoices = "";
+                for (int i = 0; i < choices.Count; i++)
+                    displayChoices += (team2Playing ? String.Concat(Enumerable.Repeat(" ", LINESIZE)) : "") + choices[i] + String.Concat(Enumerable.Repeat(" ", lineWidth - choices[i].Length)) + (i == choice ? arrow : noArrow) + (i == choices.Count - 1 ? "" : "\n");
+                Console.Write(displayChoices);
+
                 ConsoleKey key = Console.ReadKey().Key;
-                if (key == ConsoleKey.RightArrow && choice < nbChoices-1)
-                    choice += 1;
-                else if (key == ConsoleKey.LeftArrow && choice > 0)
+                if (key == ConsoleKey.UpArrow && choice > 0)
                     choice -= 1;
-                else if (key == ConsoleKey.Enter)
+                else if (key == ConsoleKey.DownArrow && choice < choices.Count-1)
+                    choice += 1;
+                if (key == ConsoleKey.Enter)
                     entered = true;
             }
+            ClearUnder(clearIndex);
             return choice;
         }
 
-        static void PlayerActionChoice(List<Character> team1, List<Character> team2)
+        static void ClearUnder(int top)
         {
-            int offset = 8;
+            Console.SetCursorPosition(0, top);
+            Console.Write(String.Concat(Enumerable.Repeat(" ", Console.WindowWidth*(Console.WindowHeight-top-1))));
+            Console.SetCursorPosition(0, top);
+        }
+        static void PlayerActionChoice(List<Character> team1, List<Character> team2, bool team2Playing = false)
+        {
+            int playerChoice;
+            bool useSpecialAttack;
+            List<String> choices = new List<string>();
             foreach(Character perso in team1)
             {
-                bool useSpecialAttack = false;
-                int playerChoice = 0;
-                Console.WriteLine($"Attaquer        Défendre"); // Il faut que 1 mot + 1 espace = 2 fois le offset
-                playerChoice = ArrowChoice(2, offset)+1;
-                DisplayGame(team1, team2);
+                useSpecialAttack = false;
+                playerChoice = 0;
+                if(team2Playing)
+                    Console.SetCursorPosition(LINESIZE, Console.CursorTop);
+                Console.WriteLine($"-- {perso.Name} --\n");
+                choices.Clear();
+                choices.Add("Attaquer");
+                choices.Add("Défendre");
+                playerChoice = ArrowChoice(choices, GAMEHEIGHT + 2, team2Playing) + 1;
                 // TARGETING
                 if (playerChoice == 1)
                 {
                     if (team2.Count > 1)
                     {
-                        offset = 20;
+                        choices.Clear();
                         foreach (Character enemy in team2)
-                            Console.Write(enemy.Name + String.Concat(Enumerable.Repeat(" ", offset * 2 - enemy.Name.Length)));  
-                        ArrowChoice(team2.Count, offset);
+                            choices.Add(enemy.Name);
+                        perso.Target = team2[ArrowChoice(choices, GAMEHEIGHT + 2, team2Playing)];
                     }
-                        /*
-                        while (true)
-                            {
-                                Console.Write($"Choisissez un enemie à attaquer (1) {aiTeam[0].Name} / (2) {aiTeam[1].Name}  : ");
-                                int enemyIndex = int.Parse(Console.ReadLine());
-                                if (enemyIndex < aiTeam.Count)
-                                    perso.Target = aiTeam[enemyIndex - 1];
-                                    break;
-                                Console.WriteLine("Choisissez un ennemi valide");
-                            }*/
                     else
                         perso.Target = team2[0];
                 }
 
                 if (perso.SkillCooldown == 0)
                 {
-                    Console.WriteLine("Votre personnage peut utiliser sa capacité spécial, voulez vous l'utiliser ?");
-                    Console.Write("(1) Utiliser  /  (2) Ne pas utiliser : ");
-                    int secondPlayerChoice = int.Parse(Console.ReadLine());
-                    if (secondPlayerChoice == 1)
+                    if (team2Playing)
+                        Console.SetCursorPosition(LINESIZE, Console.CursorTop);
+                    Console.WriteLine($"Utiliser la capacité spéciale :");
+                    choices.Clear();
+                    choices.Add("Non");
+                    choices.Add("Oui");
+                    playerChoice = ArrowChoice(choices, GAMEHEIGHT + 3, team2Playing);
+                    if (playerChoice == 1)
                          useSpecialAttack = true;
                 }
 
                 ActionChoice(perso, playerChoice, useSpecialAttack);
-                Console.WriteLine("");
+                ClearUnder(GAMEHEIGHT);
             }
         }
 
@@ -196,8 +199,7 @@ namespace CombatGame
             {
                 bool useSpecialAttack = false;
                 Random random = new Random();
-                Console.WriteLine("L'Ordinateur choisit une action à effectuer...");
-                Console.WriteLine("");
+                Console.WriteLine($"{perso.Name} réfléchit...");
                 Thread.Sleep(1000);
 
                 int aiChoice = random.Next(1, 3);
@@ -205,23 +207,22 @@ namespace CombatGame
                     useSpecialAttack = true;
 
                 // TARGETING
-                Console.WriteLine("");
                 if (aiChoice == 1)
                 {
                     int targetIndex = random.Next(0, team2.Count);
                     perso.Target = team2[targetIndex];
 
-                    Console.WriteLine("Ordi : {0} attaque votre {1} !", perso.Name, perso.Target.Name);
+                    Console.WriteLine("{0} attaque votre {1} !\n\n", perso.Name, perso.Target.Name);
                 }
                 else
-                    Console.WriteLine("Ordi : {0} se défend !", perso.Name);
+                    Console.WriteLine("{0} se défend !\n\n", perso.Name);
 
                 Thread.Sleep(500);
-                ActionChoice(perso, aiChoice, useSpecialAttack);
+                ActionChoice(perso, aiChoice, useSpecialAttack, true);
             }
         }
 
-        static void ActionChoice(Character perso, int choiceIndex, bool useSpecialAttack)
+        static void ActionChoice(Character perso, int choiceIndex, bool useSpecialAttack, bool aiPlaying = false)
         {
             if (choiceIndex == 1)
                 perso.SetAttackState();
@@ -230,51 +231,62 @@ namespace CombatGame
 
             if (useSpecialAttack)
             {
-                Console.WriteLine("");
-                Console.WriteLine("{0} active son attaque spécial !", perso.Name);
+                if (aiPlaying)
+                {
+                    Console.WriteLine("{0} active son attaque spécial !", perso.Name);
+                    Thread.Sleep(500);
+                }
                 perso.SpecialSkill();
-                Thread.Sleep(500);
             }
         }
 
-        static Character PlayerCharacterChoice()
+        static Character PlayerCharacterChoice(List<Character> team, int equipe)
         {
-            Character tankInfo = new Tank();
-            Character healerInfo = new Healer();
-            Character damagerInfo = new Damager();
-            Character illusionistInfo = new Illusionist();
+            List<String> choices = new List<String>();
+            int choice;
+            choices.Add("Tank");
+            choices.Add("Healer");
+            choices.Add("Damager");
+            choices.Add("Illusionist");
+            choices.Add("\nInfo des personnages");
+            choices.Add("\nFINI !");
+            do
+            {
+                DisplayGame(team, null, equipe);
+                Console.WriteLine("Recrutez un personnage :\n");
+                choice = ArrowChoice(choices, 4 + team.Count*2) + 1;
+                if (choice == 5)
+                    DisplayCharactersInfo();
+            } while (choice == 5);
 
-            Console.WriteLine("\nChoississez un personnage a ajouter à votre équipe :\n");
-            Console.WriteLine("(1) - Tank \n   HP : {0}   ATT : {1} \n   COMPETENCE SPE : {2}\n\n", tankInfo.Hp, tankInfo.Dmg, tankInfo.SkillDescription);
-            Console.WriteLine("(2) - Healer \n   HP : {0}   ATT : {1} \n   COMPETENCE SPE : {2}\n\n", healerInfo.Hp, healerInfo.Dmg, healerInfo.SkillDescription);
-            Console.WriteLine("(3) - Damager \n   HP : {0}   ATT : {1} \n   COMPETENCE SPE : {2}\n\n", damagerInfo.Hp, damagerInfo.Dmg, damagerInfo.SkillDescription);
-            Console.WriteLine("(4) - Illusionist \n   HP : {0}   ATT : {1} \n   COMPETENCE SPE : {2}\n\n", illusionistInfo.Hp, illusionistInfo.Dmg, illusionistInfo.SkillDescription);
-            Console.WriteLine("(0) - MON EQUIPE EST FAITE !\n");
-            Console.Write("Votre choix : ");
-
-            int answer = -1;
-            
-            do {
-                try
-                {
-                    answer = Convert.ToInt32(Console.ReadLine());
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Joue pas au con et entre un chiffre...");
-                }
-            } while (answer > 4 || answer < 0);
-
-            Character newCharacter = CharacterChoice(answer);
+            Character newCharacter = CharacterChoice(choice);
             if(newCharacter is Character)
             {
-                Console.Write("Choisissez un nom pour votre personnage : ");
+                Console.Clear();
+                Console.Write("Nom du personnage (Entrée pour passer) : ");
                 string newCharacterName = Console.ReadLine();
                 if (newCharacterName != "")
                     newCharacter.Name = newCharacterName;
             }
             
             return newCharacter;
+        }
+
+        static void DisplayCharactersInfo()
+        {
+            ClearUnder(0);
+            Character tankInfo = new Tank();
+            Character healerInfo = new Healer();
+            Character damagerInfo = new Damager();
+            Character illusionistInfo = new Illusionist();
+            Console.WriteLine($"Tank \n   HP : {tankInfo.Hp}   ATT : {tankInfo.Dmg} \n   COMPETENCE SPE : {tankInfo.SkillDescription}\n\n");
+            Console.WriteLine($"Healer \n   HP : {healerInfo.Hp}   ATT : {healerInfo.Dmg} \n   COMPETENCE SPE : {healerInfo.SkillDescription}\n\n");
+            Console.WriteLine($"Damager \n   HP : {damagerInfo.Hp}   ATT : {damagerInfo.Dmg} \n   COMPETENCE SPE : {damagerInfo.SkillDescription}\n\n");
+            Console.WriteLine($"Illusionist \n   HP : {illusionistInfo.Hp}   ATT : {illusionistInfo.Dmg} \n   COMPETENCE SPE : {illusionistInfo.SkillDescription}\n\n");
+
+            List<String> choices = new List<String>();
+            choices.Add("Retour");
+            ArrowChoice(choices, Console.WindowHeight-1);
         }
 
         static Character AICharacterChoice()
@@ -332,6 +344,8 @@ namespace CombatGame
                     toRemove.Add(perso);
             foreach (Character persoDead in toRemove)
                 team2.Remove(persoDead);
+
+            GAMEHEIGHT = 2 + Math.Max(team1.Count, team2.Count) * 2;
 
             if (team1.Count == 0 || team2.Count == 0)
                 return true;
