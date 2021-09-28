@@ -105,7 +105,7 @@ namespace CombatGame
 
         static void DisplayGame(List<Character> team1, List<Character> team2)
         {
-            int lineSize = 75;
+            int lineSize = 60;
             Console.Clear();
             Console.WriteLine("Equipe 1 :" + String.Concat(Enumerable.Repeat(" ", lineSize - 10)) + "Equipe 2 :\n");
             for (int i = 0; i<team1.Count; i++)
@@ -118,40 +118,51 @@ namespace CombatGame
                     perso2Info = $"{perso2.Name} : HP = {perso2.Hp} ATK = {perso2.Dmg} Cooldown = {perso2.SkillCooldown}";
                     perso1Info += String.Concat(Enumerable.Repeat(" ", lineSize-perso1Info.Length));
                 }
-                Console.WriteLine(perso1Info + perso2Info);
+                Console.WriteLine(perso1Info + perso2Info + "\n");
             }
         }
 
-        static void PlayerActionChoice(List<Character> playerTeam, List<Character> aiTeam)
+        static int ArrowChoice(int nbChoices, int offset)
         {
-            bool entered;
-            string offset = "          ", arrow = " ^^^";
-            string ennemies;
-            foreach(Character perso in playerTeam)
+            int choice = 0;
+            bool entered = false;
+            string arrow = String.Concat(Enumerable.Repeat(" ", offset / 2 - 2)) + "^^^";
+            while (!entered)
+            {
+                Console.Write("\r" + String.Concat(Enumerable.Repeat(" ", Console.WindowWidth-5)));
+                Console.Write("\r" + String.Concat(Enumerable.Repeat(" ", offset * 2 * choice)) + arrow);
+                ConsoleKey key = Console.ReadKey().Key;
+                if (key == ConsoleKey.RightArrow && choice < nbChoices-1)
+                    choice += 1;
+                else if (key == ConsoleKey.LeftArrow && choice > 0)
+                    choice -= 1;
+                else if (key == ConsoleKey.Enter)
+                    entered = true;
+            }
+            return choice;
+        }
+
+        static void PlayerActionChoice(List<Character> team1, List<Character> team2)
+        {
+            int offset = 8;
+            foreach(Character perso in team1)
             {
                 bool useSpecialAttack = false;
                 int playerChoice = 0;
-                Console.WriteLine($"Attaquer{offset}Défendre", perso.Name);
-                entered = false;
-                while (!entered)
-                {
-                    Console.Write("\r                                ");
-                    Console.Write("\r" + String.Concat(Enumerable.Repeat(offset, 2*playerChoice)) + arrow);
-                    ConsoleKey key = Console.ReadKey().Key;
-                    if (key == ConsoleKey.RightArrow)
-                        playerChoice = 1;
-                    else if (key == ConsoleKey.LeftArrow)
-                        playerChoice = 0;
-                    else if (key == ConsoleKey.Enter)
-                        entered = true;
-                }
-                DisplayGame(playerTeam, aiTeam);
-                playerChoice++;
-                entered = false;
+                Console.WriteLine($"Attaquer        Défendre"); // Il faut que 1 mot + 1 espace = 2 fois le offset
+                playerChoice = ArrowChoice(2, offset)+1;
+                DisplayGame(team1, team2);
                 // TARGETING
                 if (playerChoice == 1)
                 {
-                    if (aiTeam.Count > 1)
+                    if (team2.Count > 1)
+                    {
+                        offset = 20;
+                        foreach (Character enemy in team2)
+                            Console.Write(enemy.Name + String.Concat(Enumerable.Repeat(" ", offset * 2 - enemy.Name.Length)));  
+                        ArrowChoice(team2.Count, offset);
+                    }
+                        /*
                         while (true)
                             {
                                 Console.Write($"Choisissez un enemie à attaquer (1) {aiTeam[0].Name} / (2) {aiTeam[1].Name}  : ");
@@ -160,9 +171,9 @@ namespace CombatGame
                                     perso.Target = aiTeam[enemyIndex - 1];
                                     break;
                                 Console.WriteLine("Choisissez un ennemi valide");
-                            }
+                            }*/
                     else
-                        perso.Target = aiTeam[0];
+                        perso.Target = team2[0];
                 }
 
                 if (perso.SkillCooldown == 0)
@@ -179,9 +190,9 @@ namespace CombatGame
             }
         }
 
-        static void AiActionChoice(List<Character> aiTeam, List<Character> playerTeam)
+        static void AiActionChoice(List<Character> team1, List<Character> team2)
         {
-            foreach (Character perso in aiTeam)
+            foreach (Character perso in team1)
             {
                 bool useSpecialAttack = false;
                 Random random = new Random();
@@ -197,8 +208,8 @@ namespace CombatGame
                 Console.WriteLine("");
                 if (aiChoice == 1)
                 {
-                    int targetIndex = random.Next(0, playerTeam.Count);
-                    perso.Target = playerTeam[targetIndex];
+                    int targetIndex = random.Next(0, team2.Count);
+                    perso.Target = team2[targetIndex];
 
                     Console.WriteLine("Ordi : {0} attaque votre {1} !", perso.Name, perso.Target.Name);
                 }
