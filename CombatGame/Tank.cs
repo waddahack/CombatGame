@@ -57,11 +57,8 @@ namespace CombatGame
             if (IsSpecialSkillUsed())
                 dmg -= 1;
 
-            Console.WriteLine("Skill cooldown : " + skillCooldown);
             if (skillCooldown == maxSkillCooldown - 2 && hp > 0)
                 hp += 1;
-                Console.WriteLine("Tank récupère 1 point de vie");
-                Thread.Sleep(1000);
 
             if (skillCooldown > 0)
                 skillCooldown -= 1;

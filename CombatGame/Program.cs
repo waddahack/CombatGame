@@ -65,7 +65,6 @@ namespace CombatGame
             {
                 // DISPLAY GAME
                 DisplayGame(team1, team2);
-                Console.WriteLine("");
 
                 // PLAYER CHOICE
                 PlayerActionChoice(team1, team2);
@@ -106,46 +105,62 @@ namespace CombatGame
 
         static void DisplayGame(List<Character> team1, List<Character> team2)
         {
-            Console.WriteLine("Equipe 1 :");
+            int lineSize = 75;
+            Console.Clear();
+            Console.WriteLine("Equipe 1 :" + String.Concat(Enumerable.Repeat(" ", lineSize - 10)) + "Equipe 2 :\n");
             for (int i = 0; i<team1.Count; i++)
             {
-                Character perso = team1[i];
-                Console.WriteLine($"{perso.Name} : HP = {perso.Hp} ATK = {perso.Dmg} Cooldown = {perso.SkillCooldown}");
+                Character perso1 = team1[i], perso2;
+                string perso1Info = $"{ perso1.Name} : HP = { perso1.Hp} ATK = { perso1.Dmg} Cooldown = { perso1.SkillCooldown}", perso2Info = "";
+                if (i < team2.Count)
+                {
+                    perso2 = team2[i];
+                    perso2Info = $"{perso2.Name} : HP = {perso2.Hp} ATK = {perso2.Dmg} Cooldown = {perso2.SkillCooldown}";
+                    perso1Info += String.Concat(Enumerable.Repeat(" ", lineSize-perso1Info.Length));
+                }
+                Console.WriteLine(perso1Info + perso2Info);
             }
-            Console.WriteLine();
-
-            Console.WriteLine("Equipe 2 :");
-            for (int i = 0; i < team1.Count; i++)
-            {
-                Character perso = team2[i];
-                Console.WriteLine($"{perso.Name} : HP = {perso.Hp} ATK = {perso.Dmg} Cooldown = {perso.SkillCooldown}");
-            }
-            Console.WriteLine("");
         }
 
         static void PlayerActionChoice(List<Character> playerTeam, List<Character> aiTeam)
         {
+            bool entered;
+            string offset = "          ", arrow = " ^^^";
+            string ennemies;
             foreach(Character perso in playerTeam)
             {
                 bool useSpecialAttack = false;
-                int playerChoice;
-                Console.WriteLine("Choisissez une action a effectuer pour {0}", perso.Name);
-                Console.Write("(1) Attack  /  (2) Defend  : ");
-                playerChoice = int.Parse(Console.ReadLine());
-
+                int playerChoice = 0;
+                Console.WriteLine($"Attaquer{offset}Défendre", perso.Name);
+                entered = false;
+                while (!entered)
+                {
+                    Console.Write("\r                                ");
+                    Console.Write("\r" + String.Concat(Enumerable.Repeat(offset, 2*playerChoice)) + arrow);
+                    ConsoleKey key = Console.ReadKey().Key;
+                    if (key == ConsoleKey.RightArrow)
+                        playerChoice = 1;
+                    else if (key == ConsoleKey.LeftArrow)
+                        playerChoice = 0;
+                    else if (key == ConsoleKey.Enter)
+                        entered = true;
+                }
+                DisplayGame(playerTeam, aiTeam);
+                playerChoice++;
+                entered = false;
                 // TARGETING
                 if (playerChoice == 1)
                 {
                     if (aiTeam.Count > 1)
                         while (true)
-                        {
-                            Console.Write($"Choisissez un enemie à attaquer (1) {aiTeam[0].Name} / (2) {aiTeam[1].Name}  : ");
-                            int enemyIndex = int.Parse(Console.ReadLine());
-                            if (enemyIndex < aiTeam.Count)
-                                perso.Target = aiTeam[enemyIndex - 1];
-                                break;
-                            Console.WriteLine("Choisissez un ennemi valide");
-                        }
+                            {
+                                Console.Write($"Choisissez un enemie à attaquer (1) {aiTeam[0].Name} / (2) {aiTeam[1].Name}  : ");
+                                int enemyIndex = int.Parse(Console.ReadLine());
+                                if (enemyIndex < aiTeam.Count)
+                                    perso.Target = aiTeam[enemyIndex - 1];
+                                    break;
+                                Console.WriteLine("Choisissez un ennemi valide");
+                            }
                     else
                         perso.Target = aiTeam[0];
                 }
@@ -219,16 +234,11 @@ namespace CombatGame
             Character illusionistInfo = new Illusionist();
 
             Console.WriteLine("\nChoississez un personnage a ajouter à votre équipe :\n");
-            Console.WriteLine("(0) - MON EQUIPE EST FAITE !");
-            Console.WriteLine();
-            Console.WriteLine("(1) - Tank \n   HP : {0}   ATT : {1} \n   COMPETENCE SPE : {2}\n", tankInfo.Hp, tankInfo.Dmg, tankInfo.SkillDescription);
-            Console.WriteLine();
-            Console.WriteLine("(2) - Healer \n   HP : {0}   ATT : {1} \n   COMPETENCE SPE : {2}\n", healerInfo.Hp, healerInfo.Dmg, healerInfo.SkillDescription);
-            Console.WriteLine();
-            Console.WriteLine("(3) - Damager \n   HP : {0}   Attaque : {1} \n   COMPETENCE SPE : {2}\n", damagerInfo.Hp, damagerInfo.Dmg, damagerInfo.SkillDescription);
-            Console.WriteLine();
-            Console.WriteLine("(4) - Illusionist \n   HP : {0}   Attaque : {1} \n   COMPETENCE SPE : {2}\n", illusionistInfo.Hp, illusionistInfo.Dmg, illusionistInfo.SkillDescription);
-            Console.WriteLine();
+            Console.WriteLine("(1) - Tank \n   HP : {0}   ATT : {1} \n   COMPETENCE SPE : {2}\n\n", tankInfo.Hp, tankInfo.Dmg, tankInfo.SkillDescription);
+            Console.WriteLine("(2) - Healer \n   HP : {0}   ATT : {1} \n   COMPETENCE SPE : {2}\n\n", healerInfo.Hp, healerInfo.Dmg, healerInfo.SkillDescription);
+            Console.WriteLine("(3) - Damager \n   HP : {0}   ATT : {1} \n   COMPETENCE SPE : {2}\n\n", damagerInfo.Hp, damagerInfo.Dmg, damagerInfo.SkillDescription);
+            Console.WriteLine("(4) - Illusionist \n   HP : {0}   ATT : {1} \n   COMPETENCE SPE : {2}\n\n", illusionistInfo.Hp, illusionistInfo.Dmg, illusionistInfo.SkillDescription);
+            Console.WriteLine("(0) - MON EQUIPE EST FAITE !\n");
             Console.Write("Votre choix : ");
 
             int answer = -1;

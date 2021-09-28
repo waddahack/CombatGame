@@ -5,3 +5,10 @@ C:\Users\jonat\source\repos\CombatGame\bin\Debug\CombatGame.exe
 C:\Users\jonat\source\repos\CombatGame\bin\Debug\CombatGame.pdb
 C:\Users\jonat\source\repos\CombatGame\obj\Debug\CombatGame.exe
 C:\Users\jonat\source\repos\CombatGame\obj\Debug\CombatGame.pdb
+D:\CombatGame\CombatGame\bin\Debug\CombatGame.exe.config
+D:\CombatGame\CombatGame\bin\Debug\CombatGame.exe
+D:\CombatGame\CombatGame\bin\Debug\CombatGame.pdb
+D:\CombatGame\CombatGame\obj\Debug\CombatGame.csproj.AssemblyReference.cache
+D:\CombatGame\CombatGame\obj\Debug\CombatGame.csproj.CoreCompileInputs.cache
+D:\CombatGame\CombatGame\obj\Debug\CombatGame.exe
+D:\CombatGame\CombatGame\obj\Debug\CombatGame.pdb
