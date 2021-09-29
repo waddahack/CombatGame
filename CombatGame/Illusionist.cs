@@ -17,6 +17,7 @@ namespace CombatGame
             name = "Jean-Magicien (Illusionist)";
             skillDescription = "Si la cible utilise sa COMPETENCE SPE durant ce tour, la cible se mange une longue patate et perd 3 HP. Sinon, l'illusionist trébuche tel un souillon et perd 2 HP.";
             hp = 3;
+            maxHp = hp;
             dmg = 1;
             maxSkillCooldown = 2;
         }
@@ -24,17 +25,17 @@ namespace CombatGame
 
         public override void EndTurn()
         {
-            if (IsSpecialSkillUsed())
+            if (SpecialSkillUsed)
             {
-                if (target != null && target.IsSpecialSkillUsed())
+                if (target.SpecialSkillUsed)
                 {
-                    target.Hp -= 3;
-                    Console.WriteLine($"{target.Name} se mange un coup bas de la pars de l'illusionist et perd 3 points de vie");
+                    target.TakeDamage(3);
+                    Console.WriteLine($"{target.Name} se mange un coup bas de la pars de {name} et perd 3 HP.");
                 }
                 else
                 {
-                    hp -= 2;
-                    Console.WriteLine("L'illusionist a mal enticipé et tombe par terre, se fandant le visage en deux, il perd 2 points de vie");
+                    TakeDamage(2);
+                    Console.WriteLine($"{name} a mal anticipé et tombe par terre, se fendant le visage en deux, il perd 2 HP.");
                 }
             }
             base.EndTurn();

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
 
 
@@ -12,12 +11,17 @@ namespace CombatGame
     {
 
         static int GAMEHEIGHT, LINESIZE = 60;
+        static Random RANDOM = new Random();
+
         static void Main(string[] args)
         {
+            Console.OutputEncoding = Encoding.UTF8;
             // Enregistre les personnages de chaque équipes
             List<Character> team1 = new List<Character>();
             List<Character> team2 = new List<Character>();
 
+            bool replay;
+            
             // Contre IA ?
             bool versusAI = ChoosePlayMode();
             Character choice;
@@ -33,7 +37,10 @@ namespace CombatGame
             // L'IA choisit sont équipe
             if (versusAI)
                 for (int i = 0; i < team1.Count; i++)
-                    team2.Add(AICharacterChoice());
+                {
+                    int aiCharacterChoice = RANDOM.Next(1, 6); //CHOICE OF AI
+                    team2.Add(CharacterChoice(aiCharacterChoice, team2));
+                }
             // Equipe 2 choisit ses perso
             else
             {
@@ -45,7 +52,7 @@ namespace CombatGame
                 } while (choice != null || team2.Count < 1);
             }
 
-            GAMEHEIGHT = 2 + Math.Max(team1.Count, team2.Count) * 2;
+            GAMEHEIGHT = 6 + Math.Max(team1.Count, team2.Count) * 2;
             // BOUCLE JEU
             bool endGame = false;
             while (!endGame)
@@ -60,20 +67,21 @@ namespace CombatGame
                 else
                     PlayerActionChoice(team2, team1, true);
 
+                // WHAT HAPPENED
+                Console.WriteLine("------ COMBAT LOG ------\n");
                 // CALCUL DES CHOIX ET FIN DE TOUR
-                foreach (Character perso in team1)
-                    perso.EndTurn();
-                foreach (Character perso in team2)
-                    perso.EndTurn();
-
+                Console.WriteLine("-- Equipe 1 --\n");
+                for (int i = 0; i < team1.Count; i++)
+                    team1[i].EndTurn();
+                Console.WriteLine("\n-- Equipe 2 --\n");
+                for (int i = 0; i < team2.Count; i++)
+                    team2[i].EndTurn();
+                
                 // CHECK ENDGAME et retire les persos mort des équipes
                 endGame = EndGameCheck(team1, team2);
 
-                if (versusAI)
-                {
-                    Console.WriteLine("\nEntrée pour continuer...");
-                    Console.ReadLine();
-                }
+                Console.Write("\nEntrée pour continuer...");
+                Console.ReadLine();
             }
             DisplayGame(team1, team2);
             Console.WriteLine("\nFIN");
@@ -95,20 +103,47 @@ namespace CombatGame
 
         static void DisplayGame(List<Character> team1, List<Character> team2, int equipe = 1)
         {
+            string dmgSymbol = " ATT", CDSymbol = " CD";
             Console.Clear();
+            if(!(team2 is null))
+                Console.WriteLine(String.Concat(Enumerable.Repeat("*", Console.WindowWidth)));
             Console.WriteLine("Equipe " + equipe + " :" + String.Concat(Enumerable.Repeat(" ", LINESIZE - 10)) + (team2 is null ? "" : "Equipe 2 :") + "\n");
+            Character perso1, perso2;
+            string perso1Info = "", perso2Info = "";
             for (int i = 0; i<team1.Count; i++)
             {
-                Character perso1 = team1[i], perso2;
-                string perso1Info = $"{ perso1.Name} : HP = { perso1.Hp} ATK = { perso1.Dmg} Cooldown = { perso1.SkillCooldown}", perso2Info = "";
+                perso1 = team1[i];
+                perso1Info = $"{ perso1.Name} : {CharacterHearts(perso1)} {perso1.Dmg}{dmgSymbol} {perso1.SkillCooldown}{CDSymbol}";
+                perso2Info = "";
                 if (!(team2 is null) && i < team2.Count)
                 {
                     perso2 = team2[i];
-                    perso2Info = $"{perso2.Name} : HP = {perso2.Hp} ATK = {perso2.Dmg} Cooldown = {perso2.SkillCooldown}";
+                    perso2Info = $"{perso2.Name} : {CharacterHearts(perso2)} {perso2.Dmg}{dmgSymbol} {perso2.SkillCooldown}{CDSymbol}";
                     perso1Info += String.Concat(Enumerable.Repeat(" ", LINESIZE-perso1Info.Length));
                 }
                 Console.WriteLine(perso1Info + perso2Info + "\n");
             }
+            if (team2 != null)
+                for(int i = team1.Count; i < team2.Count; i++)
+                {
+                    perso2 = team2[i];
+                    perso1Info = "";
+                    perso1Info = String.Concat(Enumerable.Repeat(" ", LINESIZE - perso1Info.Length));
+                    perso2Info = $"{perso2.Name} : {CharacterHearts(perso2)} {perso2.Dmg}{dmgSymbol} {perso2.SkillCooldown}{CDSymbol}";
+                    Console.WriteLine(perso1Info + perso2Info + "\n");
+                }
+
+            if (!(team2 is null))
+                Console.WriteLine(String.Concat(Enumerable.Repeat("*", Console.WindowWidth)));
+        }
+
+        static string CharacterHearts(Character perso)
+        {
+            string fullHeart = "♥";
+            string emptyHeart = "-";
+            int fullAmount = perso.Hp;
+            int emptyAmount = perso.MaxHp - perso.Hp;
+            return String.Concat(Enumerable.Repeat(fullHeart, fullAmount)) + String.Concat(Enumerable.Repeat(emptyHeart, emptyAmount));
         }
 
         static int ArrowChoice(List<String> choices, int clearIndex, bool team2Playing = false)
@@ -148,22 +183,22 @@ namespace CombatGame
         static void PlayerActionChoice(List<Character> team1, List<Character> team2, bool team2Playing = false)
         {
             int playerChoice;
-            bool useSpecialAttack;
             List<String> choices = new List<string>();
             foreach(Character perso in team1)
             {
-                useSpecialAttack = false;
                 playerChoice = 0;
                 if(team2Playing)
                     Console.SetCursorPosition(LINESIZE, Console.CursorTop);
                 Console.WriteLine($"-- {perso.Name} --\n");
                 choices.Clear();
                 choices.Add("Attaquer");
-                choices.Add("Défendre");
+                if(!perso.IsDefended())
+                    choices.Add("Défendre");
                 playerChoice = ArrowChoice(choices, GAMEHEIGHT + 2, team2Playing) + 1;
                 // TARGETING
-                if (playerChoice == 1)
+                if (playerChoice == 1) // Attacking
                 {
+                    perso.SetAttackState();
                     if (team2.Count > 1)
                     {
                         choices.Clear();
@@ -174,8 +209,11 @@ namespace CombatGame
                     else
                         perso.Target = team2[0];
                 }
+                else // Defending
+                    perso.SetDefendState();
+                    
 
-                if (perso.SkillCooldown == 0)
+                if (perso.SkillCooldown == 0 && !(perso is Yokel) && !(perso is Illusionist && perso.IsDefended()) && !(perso is Tank && perso.IsDefended()))
                 {
                     if (team2Playing)
                         Console.SetCursorPosition(LINESIZE, Console.CursorTop);
@@ -184,60 +222,87 @@ namespace CombatGame
                     choices.Add("Non");
                     choices.Add("Oui");
                     playerChoice = ArrowChoice(choices, GAMEHEIGHT + 3, team2Playing);
-                    if (playerChoice == 1)
-                         useSpecialAttack = true;
+                    if (playerChoice == 1) // Use special skill
+                    {
+                        perso.SpecialSkill();
+                        choices.Clear();
+                        foreach (Character ally in team1)
+                            choices.Add(ally.Name);
+                        switch (perso.GetType().Name)
+                        {
+                            case "Healer":
+                                Healer p = (Healer)perso;
+                                playerChoice = ArrowChoice(choices, GAMEHEIGHT + 3, team2Playing);
+                                p.TargetToHeal = team1[playerChoice];
+                                break;
+                        }
+                    }
+                         
                 }
 
-                ActionChoice(perso, playerChoice, useSpecialAttack);
                 ClearUnder(GAMEHEIGHT);
             }
         }
 
         static void AiActionChoice(List<Character> team1, List<Character> team2)
         {
+            Console.WriteLine($"------ ORDINATEUR ------\n");
             foreach (Character perso in team1)
             {
-                bool useSpecialAttack = false;
-                Random random = new Random();
-                Console.WriteLine($"{perso.Name} réfléchit...");
-                Thread.Sleep(1000);
-
-                int aiChoice = random.Next(1, 3);
-                if (random.Next(1, 3) == 1 && perso.SkillCooldown == 0)
-                    useSpecialAttack = true;
+                Console.WriteLine($"-- {perso.Name} --\n");
 
                 // TARGETING
-                if (aiChoice == 1)
+                if (perso.IsDefended() || RANDOM.Next(0, 100) <= 70)
                 {
-                    int targetIndex = random.Next(0, team2.Count);
-                    perso.Target = team2[targetIndex];
+                    perso.SetAttackState();
+                    perso.Target = team2[RANDOM.Next(0, team2.Count)];
 
-                    Console.WriteLine("{0} attaque votre {1} !\n\n", perso.Name, perso.Target.Name);
+                    Console.WriteLine("Attaque {0} !", perso.Target.Name);
                 }
                 else
-                    Console.WriteLine("{0} se défend !\n\n", perso.Name);
-
-                Thread.Sleep(500);
-                ActionChoice(perso, aiChoice, useSpecialAttack, true);
-            }
-        }
-
-        static void ActionChoice(Character perso, int choiceIndex, bool useSpecialAttack, bool aiPlaying = false)
-        {
-            if (choiceIndex == 1)
-                perso.SetAttackState();
-            else
-                perso.SetDefendState();
-
-            if (useSpecialAttack)
-            {
-                if (aiPlaying)
                 {
-                    Console.WriteLine("{0} active son attaque spécial !", perso.Name);
-                    Thread.Sleep(500);
+                    perso.SetDefendState();
+                    
+                    Console.WriteLine("Se défend !");
                 }
-                perso.SpecialSkill();
+                
+                if(RANDOM.Next(0, 100) <= 75 && perso.SkillCooldown == 0)
+                {
+                    switch (perso.GetType().Name)
+                    {
+                        case "Healer":
+                            foreach (Character ally in team1)
+                                if (ally.Hp < ally.MaxHp)
+                                {
+                                    Healer p = (Healer)perso;
+                                    p.TargetToHeal = ally;
+                                    perso.SpecialSkill();
+                                    break;
+                                }
+                            break;
+                        case "Tank":
+                            if (!perso.IsDefended())
+                                perso.SpecialSkill();
+                            break;
+                        case "Illusionist":
+                            if (!perso.IsDefended())
+                                perso.SpecialSkill();
+                            break;
+                        case "Yokel":
+                            break;
+                        default:
+                            perso.SpecialSkill();
+                            break;
+                    }
+                    if (perso.SpecialSkillUsed)
+                        Console.WriteLine("Utilise sa compétence spéciale !");
+                }
+
+                Console.Write("\nEntrée pour continuer...");
+                Console.ReadLine();
+                ClearUnder(GAMEHEIGHT + 2);
             }
+            ClearUnder(GAMEHEIGHT);
         }
 
         static Character PlayerCharacterChoice(List<Character> team, int equipe)
@@ -248,6 +313,7 @@ namespace CombatGame
             choices.Add("Healer");
             choices.Add("Damager");
             choices.Add("Illusionist");
+            choices.Add("Summoner");
             choices.Add("\nInfo des personnages");
             choices.Add("\nFINI !");
             do
@@ -255,11 +321,11 @@ namespace CombatGame
                 DisplayGame(team, null, equipe);
                 Console.WriteLine("Recrutez un personnage :\n");
                 choice = ArrowChoice(choices, 4 + team.Count*2) + 1;
-                if (choice == 5)
+                if (choice == 6)
                     DisplayCharactersInfo();
-            } while (choice == 5);
+            } while (choice == 6);
 
-            Character newCharacter = CharacterChoice(choice);
+            Character newCharacter = CharacterChoice(choice, team);
             if(newCharacter is Character)
             {
                 Console.Clear();
@@ -279,30 +345,19 @@ namespace CombatGame
             Character healerInfo = new Healer();
             Character damagerInfo = new Damager();
             Character illusionistInfo = new Illusionist();
-            Console.WriteLine($"Tank \n   HP : {tankInfo.Hp}   ATT : {tankInfo.Dmg} \n   COMPETENCE SPE : {tankInfo.SkillDescription}\n\n");
-            Console.WriteLine($"Healer \n   HP : {healerInfo.Hp}   ATT : {healerInfo.Dmg} \n   COMPETENCE SPE : {healerInfo.SkillDescription}\n\n");
-            Console.WriteLine($"Damager \n   HP : {damagerInfo.Hp}   ATT : {damagerInfo.Dmg} \n   COMPETENCE SPE : {damagerInfo.SkillDescription}\n\n");
-            Console.WriteLine($"Illusionist \n   HP : {illusionistInfo.Hp}   ATT : {illusionistInfo.Dmg} \n   COMPETENCE SPE : {illusionistInfo.SkillDescription}\n\n");
+            Character summonerInfo = new Summoner();
+            Console.WriteLine($"Tank \n   {CharacterHearts(tankInfo)}   ATT : {tankInfo.Dmg}  CD : {tankInfo.MaxSkillCooldown} \n COMPETENCE SPE : {tankInfo.SkillDescription}\n\n");
+            Console.WriteLine($"Healer \n   {CharacterHearts(healerInfo)}   ATT : {healerInfo.Dmg}  CD : {healerInfo.MaxSkillCooldown} \n  COMPETENCE SPE : {healerInfo.SkillDescription}\n\n");
+            Console.WriteLine($"Damager \n   {CharacterHearts(damagerInfo)}   ATT : {damagerInfo.Dmg}  CD : {damagerInfo.MaxSkillCooldown} \n COMPETENCE SPE : {damagerInfo.SkillDescription}\n\n");
+            Console.WriteLine($"Illusionist \n   {CharacterHearts(illusionistInfo)}   ATT : {illusionistInfo.Dmg}  CD : {illusionistInfo.MaxSkillCooldown} \n COMPETENCE SPE : {illusionistInfo.SkillDescription}\n\n");
+            Console.WriteLine($"Summoner \n   {CharacterHearts(summonerInfo)}   ATT : {summonerInfo.Dmg}  CD : {summonerInfo.MaxSkillCooldown} \n COMPETENCE SPE : {summonerInfo.SkillDescription}\n\n");
 
             List<String> choices = new List<String>();
             choices.Add("Retour");
             ArrowChoice(choices, Console.WindowHeight-1);
         }
 
-        static Character AICharacterChoice()
-        {
-            Random random = new Random();
-            int aiCharacterChoice = random.Next(1, 5); //CHOICE OF AI
-
-            Character aiCharacter = CharacterChoice(aiCharacterChoice);
-            Console.WriteLine("");
-            Console.WriteLine("Ordinateur : J'ai choisi " + aiCharacter.Name);
-            Console.WriteLine("");
-            return aiCharacter;
-
-        }
-
-        static Character CharacterChoice(int choiceIndex)
+        static Character CharacterChoice(int choiceIndex, List<Character> team)
         {
             Character newCharacter;
             switch (choiceIndex)
@@ -319,37 +374,54 @@ namespace CombatGame
                 case 4:
                     newCharacter = new Illusionist();
                     break;
+                case 5:
+                    newCharacter = new Summoner();
+                    break;
                 default:
                     newCharacter = null;
                     break;
             }
+            if (newCharacter is Character)
+                newCharacter.Team = team;
             return newCharacter;
         }
 
 
         static bool EndGameCheck(List<Character> team1, List<Character> team2)
         {
-            List<Character> toRemove = new List<Character>();
+            RemoveDeadCharacters(team1);
+            RemoveDeadCharacters(team2);
 
-            foreach (Character perso in team1)
-                if (perso.Hp <= 0)
-                    toRemove.Add(perso);
-            foreach (Character persoDead in toRemove)
-                team1.Remove(persoDead);
-
-            toRemove.Clear();
-
-            foreach (Character perso in team2)
-                if (perso.Hp <= 0)
-                    toRemove.Add(perso);
-            foreach (Character persoDead in toRemove)
-                team2.Remove(persoDead);
-
-            GAMEHEIGHT = 2 + Math.Max(team1.Count, team2.Count) * 2;
+            GAMEHEIGHT = 6 + Math.Max(team1.Count, team2.Count) * 2;
 
             if (team1.Count == 0 || team2.Count == 0)
                 return true;
             return false;
+        }
+
+        static void RemoveDeadCharacters(List<Character> team)
+        {
+            List<Character> toRemove = new List<Character>();
+
+            foreach (Character perso in team)
+            {
+                perso.SpecialSkillUsed = false;
+                if (perso.Hp <= 0)
+                    toRemove.Add(perso);
+            }
+
+            foreach (Character persoDead in toRemove)
+            {
+                Console.WriteLine($"\n{persoDead.Name} est mort !");
+                team.Remove(persoDead);
+                if (persoDead.GetType().Name == "Summoner")
+                {
+                    Summoner p = (Summoner)persoDead;
+                    foreach (Yokel y in p.YokelList)
+                        team.Remove(y);
+                    p.YokelList.Clear();
+                }
+            }   
         }
     }
 }

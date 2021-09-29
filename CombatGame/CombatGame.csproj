@@ -44,10 +44,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharacterClass.cs" />
+    <Compile Include="Yokel.cs" />
+    <Compile Include="Summoner.cs" />
     <Compile Include="Illusionist.cs" />
     <Compile Include="Damager.cs" />
     <Compile Include="Healer.cs" />
-    <Compile Include="Interface1.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tank.cs" />

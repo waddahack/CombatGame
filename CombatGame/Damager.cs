@@ -17,6 +17,7 @@ namespace CombatGame
             name = "Fredo (Damager)";
             skillDescription = "Inflige en retour les dégâts qui lui sont infligés durant ce tour. Les dégâts sont quand même subis.";
             hp = 3;
+            maxHp = hp;
             dmg = 2;
             maxSkillCooldown = 3;
         }

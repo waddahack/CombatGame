@@ -1,5 +1,3 @@
-Faire contoure display game
+implémenter les animations
 
-Fixer le Tank (increvable + sa comp spé)
-
-Pouvoir healer autre que soi avec le healer
+fonction rejouer
