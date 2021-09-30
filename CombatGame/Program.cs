@@ -29,6 +29,8 @@ namespace CombatGame
                 // Contre IA ?
                 bool versusAI = ChoosePlayMode();
                 Character choice;
+                team1.Clear();
+                team2.Clear();
 
                 // Equipe 1 choisit ses perso
                 Console.Clear();
@@ -97,17 +99,22 @@ namespace CombatGame
                 DisplayGame(team1, team2);
                 if(team1.Count > team2.Count)
                 {
-                    Console.WriteLine("\nÉquipe 1 a gagné !\n");
                     EndAnimation();
+                    ClearUnder(0);
+                    Console.WriteLine("\nÉquipe 1 a gagné !\n");
                 } 
                 else if (team1.Count < team2.Count)
                 {
-                    Console.WriteLine("\nÉquipe 2 a gagné !\n");
                     EndAnimation();
+                    ClearUnder(0);
+                    Console.WriteLine("\nÉquipe 2 a gagné !\n");
                 }
                 else
+                {
+                    ClearUnder(0);
                     Console.WriteLine("\nÉgalité.\n");
-                replay = ArrowChoice(replayChoices, GAMEHEIGHT + 3);
+                }
+                replay = ArrowChoice(replayChoices, 3);
                 Console.Clear();
             } while (replay == 0);
         }
@@ -1115,10 +1122,7 @@ You stand in front of your enemy, as he is trying to breathe.";
 └────────────────────x───────────────────────┘";
 
             Console.WriteLine(fin21);
-            Console.WriteLine();
-            Thread.Sleep(3000);
-
-            Console.ReadLine();
+            Thread.Sleep(1000);
         }
 
         static void ComputerAnimation()
