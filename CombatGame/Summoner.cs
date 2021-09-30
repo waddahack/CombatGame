@@ -8,17 +8,26 @@ namespace CombatGame
 {
     public class Summoner : Character
     {
-
+        public static int nbrDefaultSummoner = 0;
         private List<Character> yokelList = new List<Character>();
 
         public List<Character> YokelList { get { return yokelList; } }
 
-        public override string Name { get { return name; } set { name = value + " (Summoner)"; } }
+        public override string Name
+        {
+            get { return name; }
+            set
+            {
+                name = value + " (Summoner)";
+                nbrDefaultSummoner--;
+            }
+        }
 
         public Summoner()
             : base()
         {
-            name = "Chef Péquenaud (Summoner)";
+            nbrDefaultSummoner++;
+            name = "Chef Péquenaud (Summoner)" + (nbrDefaultSummoner > 1 ? $"{nbrDefaultSummoner}" : "") + " (Summoner)";
             skillDescription = "Fait apparaître un fidèle Péquenaud.";
             hp = 3;
             maxHp = hp;

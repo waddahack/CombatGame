@@ -8,13 +8,23 @@ namespace CombatGame
 {
     class Illusionist : Character
     {
+        public static int nbrDefaultIllu = 0;
 
-        public override string Name { get { return name; } set { name = value + " (Illusionist)"; } }
+        public override string Name
+        {
+            get { return name; }
+            set
+            {
+                name = value + " (Illusionist)";
+                nbrDefaultIllu--;
+            }
+        }
 
         public Illusionist()
             : base()
         {
-            name = "Jean-Magicien (Illusionist)";
+            nbrDefaultIllu++;
+            name = "Jean-Magicien" + (nbrDefaultIllu > 1 ? $"{nbrDefaultIllu}" : "") + " (Illusionist)";
             skillDescription = "Si la cible utilise sa COMPETENCE SPE durant ce tour, la cible se mange une longue patate et perd 3 HP. Sinon, l'illusionist trébuche tel un souillon et perd 2 HP.";
             hp = 3;
             maxHp = hp;

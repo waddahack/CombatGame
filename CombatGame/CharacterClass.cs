@@ -122,7 +122,12 @@ namespace CombatGame
             if (dmgTaken > 0)
                 Console.WriteLine($"{name} s'est infligé {dmgTaken} HP.");
             dmgTaken = 0;
+        }
 
+        public void Reset()
+        {
+            if (hp > maxHp)
+                hp = maxHp;
         }
     }
 }

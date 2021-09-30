@@ -9,16 +9,28 @@ namespace CombatGame
     class Healer : Character
     {
 
+        public static int nbrDefaultHealer = 0;
+
         private Character targetToHeal;
 
         public Character TargetToHeal { get { return targetToHeal; } set { targetToHeal = value; } }
-        public override string Name { get { return name; } set { name = value + " (Healer)"; } }
+
+        public override string Name
+        {
+            get { return name; }
+            set
+            {
+                name = value + " (Healer)";
+                nbrDefaultHealer--;
+            }
+        }
 
         public Healer()
             : base()
         {
+            nbrDefaultHealer++;
             skillDescription = "Soigne 1 HP à un allié ou soi-même.";
-            name = "Gandhi (Healer)";
+            name = "Gandhi" + (nbrDefaultHealer > 1 ? $"{nbrDefaultHealer}" : "") + " (Healer)";
             hp = 4;
             maxHp = hp;
             dmg = 1;
@@ -27,7 +39,7 @@ namespace CombatGame
 
         public void Heal()
         {
-            if (targetToHeal != null && targetToHeal.Hp < targetToHeal.MaxHp)
+            if (targetToHeal != null)
                 targetToHeal.Hp += 1;
             targetToHeal = null;
         }

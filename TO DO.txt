@@ -1,3 +1,0 @@
-implémenter les animations
-
-fonction rejouer
