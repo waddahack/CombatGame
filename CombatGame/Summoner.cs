@@ -27,7 +27,7 @@ namespace CombatGame
             : base()
         {
             nbrDefaultSummoner++;
-            name = "Chef Péquenaud (Summoner)" + (nbrDefaultSummoner > 1 ? $"{nbrDefaultSummoner}" : "") + " (Summoner)";
+            name = "Chef Péquenaud" + (nbrDefaultSummoner > 1 ? $"{nbrDefaultSummoner}" : "") + " (Summoner)";
             skillDescription = "Fait apparaître un fidèle Péquenaud.";
             hp = 3;
             maxHp = hp;

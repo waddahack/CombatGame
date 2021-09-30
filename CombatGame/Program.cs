@@ -41,11 +41,14 @@ namespace CombatGame
 
                 // L'IA choisit sont équipe
                 if (versusAI)
+                {
                     for (int i = 0; i < team1.Count; i++)
                     {
                         int aiCharacterChoice = RANDOM.Next(1, 6); //CHOICE OF AI
                         team2.Add(CharacterChoice(aiCharacterChoice, team2));
                     }
+                    ComputerAnimation();
+                }
                 // Equipe 2 choisit ses perso
                 else
                 {
@@ -1116,6 +1119,192 @@ You stand in front of your enemy, as he is trying to breathe.";
             Thread.Sleep(3000);
 
             Console.ReadLine();
+        }
+
+        static void ComputerAnimation()
+        {
+            string saleGueule5 = @"
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooo+++++ooosssosoo+++++++++++++++++++++oooo
+oooooooooooooooooooooooo++++++++oshdmmNmmmmddhs++++++++++++++++++++ooo
+oooooooooooooo++o+o++++++++++++oymNmNNNNNNdmdddhyo+////+++++++++++++oo
++++++++++++++++++++++++++++++++ymNNNMNmmmmdmdddhddo//////++++++++++++o
++++++++++++++++++++++++++++++++dNmNNNmmmmmmmmmddhyy///////+++++++++++o";
+
+            string saleGueule6 = @"
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooo+++++ooosssosoo+++++++++++++++++++++oooo
+oooooooooooooooooooooooo++++++++oshdmmNmmmmddhs++++++++++++++++++++ooo
+oooooooooooooo++o+o++++++++++++oymNmNNNNNNdmdddhyo+////+++++++++++++oo
++++++++++++++++++++++++++++++++ymNNNMNmmmmdmdddhddo//////++++++++++++o
++++++++++++++++++++++++++++++++dNmNNNmmmmmmmmmddhyy///////+++++++++++o
+++++++++++++++++++++++++++++++smNmNmmmddddhhhhyhhyo////////++++++++++o
+++++++++++++++++++++++++++++++smNmmdddddddhys+:-sy+/////////++++++++++
+++++++++++++++++++++++++++++++smmmdhhhddmmhyo//./+///////////+++++++++";
+
+            string saleGueule7 = @"
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooo+++++ooosssosoo+++++++++++++++++++++oooo
+oooooooooooooooooooooooo++++++++oshdmmNmmmmddhs++++++++++++++++++++ooo
+oooooooooooooo++o+o++++++++++++oymNmNNNNNNdmdddhyo+////+++++++++++++oo
++++++++++++++++++++++++++++++++ymNNNMNmmmmdmdddhddo//////++++++++++++o
++++++++++++++++++++++++++++++++dNmNNNmmmmmmmmmddhyy///////+++++++++++o
+++++++++++++++++++++++++++++++smNmNmmmddddhhhhyhhyo////////++++++++++o
+++++++++++++++++++++++++++++++smNmmdddddddhys+:-sy+/////////++++++++++
+++++++++++++++++++++++++++++++smmmdhhhddmmhyo//./+///////////+++++++++
+++++++++++++++++++++++++++++++ddhdhhhdmmmmmmhoyo+////////////+++++++++
+++++++++++++++++++++++++++++++dmdddyhdmdhhmmh+hho////////////+++++++++
+++++++++++++++++//////////////ohdddddddddhmdh/-://////////////++++++++
++++++++++/////////////////////syhhddmmmdmmNmho.///////////////++++++++
+++++//////////////////////////yydhdmmNmmNNmhys////////////////++++++++
+++++/////////////////////////yyydhdmmNmmNNmhyss///////////////++++++++";
+
+            string saleGueule8 = @"
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooo+++++ooosssosoo+++++++++++++++++++++oooo
+oooooooooooooooooooooooo++++++++oshdmmNmmmmddhs++++++++++++++++++++ooo
+oooooooooooooo++o+o++++++++++++oymNmNNNNNNdmdddhyo+////+++++++++++++oo
++++++++++++++++++++++++++++++++ymNNNMNmmmmdmdddhddo//////++++++++++++o
++++++++++++++++++++++++++++++++dNmNNNmmmmmmmmmddhyy///////+++++++++++o
+++++++++++++++++++++++++++++++smNmNmmmddddhhhhyhhyo////////++++++++++o
+++++++++++++++++++++++++++++++smNmmdddddddhys+:-sy+/////////++++++++++
+++++++++++++++++++++++++++++++smmmdhhhddmmhyo//./+///////////+++++++++
+++++++++++++++++++++++++++++++ddhdhhhdmmmmmmhoyo+////////////+++++++++
+++++++++++++++++++++++++++++++dmdddyhdmdhhmmh+hho////////////+++++++++
+++++++++++++++++//////////////ohdddddddddhmdh/-://////////////++++++++
++++++++++/////////////////////syhhddmmmdmmNmho.///////////////++++++++
+++++//////////////////////////yydhdmmNmmNNmhys////////////////++++++++
+////////////////////////+++/+oyhhddmmNmNNmdhsh////////////////++++++++
+////////+oossyyysssyhdddddddhyyhdhhdmNmmmmmdho/////////////////+++++++ 
+/////+shhhddddmmmmmmmmdddmdhhyyhhyhdddmmmmmhs+/////////////////+++++++
+///+yhhhhdddddmmmmmNNmmmmmddhhydhyhddhyo+//+/://////////////////++++++
+//+yyhhhhdddddmmmmNNmmdmmmmddhhdhhddyyso/:sys+:::///:///////////++++++
+//+yyhhhhdddddmmmmNNmmdmmmmddhhdhhddyyso/:sys+:::///:///////////++++++";
+
+            string saleGueule9 = @"
+oooooooooooooooooooooooooooooo+++++ooosssosoo+++++++++++++++++++++oooo
+oooooooooooooooooooooooo++++++++oshdmmNmmmmddhs++++++++++++++++++++ooo
+oooooooooooooo++o+o++++++++++++oymNmNNNNNNdmdddhyo+////+++++++++++++oo
++++++++++++++++++++++++++++++++ymNNNMNmmmmdmdddhddo//////++++++++++++o
++++++++++++++++++++++++++++++++dNmNNNmmmmmmmmmddhyy///////+++++++++++o
+++++++++++++++++++++++++++++++smNmNmmmddddhhhhyhhyo////////++++++++++o
+++++++++++++++++++++++++++++++smNmmdddddddhys+:-sy+/////////++++++++++
+++++++++++++++++++++++++++++++smmmdhhhddmmhyo//./+///////////+++++++++
+++++++++++++++++++++++++++++++ddhdhhhdmmmmmmhoyo+////////////+++++++++
+++++++++++++++++++++++++++++++dmdddyhdmdhhmmh+hho////////////+++++++++
+++++++++++++++++//////////////ohdddddddddhmdh/-://////////////++++++++
++++++++++/////////////////////syhhddmmmdmmNmho.///////////////++++++++
+++++//////////////////////////yydhdmmNmmNNmhys////////////////++++++++
+////////////////////////+++/+oyhhddmmNmNNmdhsh////////////////++++++++
+////////+oossyyysssyhdddddddhyyhdhhdmNmmmmmdho/////////////////+++++++
+/////+shhhddddmmmmmmmmdddmdhhyyhhyhdddmmmmmhs+/////////////////+++++++
+///+yhhhhdddddmmmmmNNmmmmmddhhydhyhddhyo+//+/://////////////////++++++
+//+yyhhhhdddddmmmmNNmmdmmmmddhhdhhddyyso/:sys+:::///:///////////++++++
+/+syhhhhhdddddmmmmmmmmmmmmmmddhddddddhyo+smmdhs+:-::::://////////+++++
++syyhhhhhhddmmmmmmmmmmmmmmmmNmdmmddddhyooddhyhys/.-::::://///////+++++
+yyyhhhhhhdddddddmmmmmmmmmmmmmmdmmdddhhysss+yyhyo/::-::::://////////+++
+hhyhddddddddddddmmmmmmmmmmmmdhdmddddddddhyyhdhhso////:--:///////////++
+ddhhdmmmmmmmddddmmmmmmmmmmmmdhdmddddmmmddhdddddhysys++-..:///////////+
+dhhddmmmmmNNdddmmmmmmmmmmmmmmmddmmmdmmmmddddddddhyysos/-..://////////+
+ddddmmmmmmNmdddmmmmmmmmmmmmNNdddmmmmmdmmmdddddddhhhyyyo:-.-//////////+
+dmdmmmmdymmmdddmmmmmmmNNNNNNmdddmmmmmmmmmmddhdddddhhhyo/:--///////////";
+
+            for (int i = 0; i < 5; i++)
+            {
+                ClearUnder(0);
+
+                switch (i % 5)
+                {
+                    case 0:
+                        {
+                            Console.WriteLine(saleGueule5);
+                            break;
+                        };
+                    case 1:
+                        {
+                            Console.WriteLine(saleGueule6);
+                            break;
+                        };
+                    case 2:
+                        {
+                            Console.WriteLine(saleGueule7);
+                            break;
+                        };
+                    case 3:
+                        {
+                            Console.WriteLine(saleGueule8);
+                            break;
+                        };
+                    case 4:
+                        {
+                            Console.WriteLine(saleGueule9);
+                            break;
+                        };
+                }
+
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine();
+                Console.WriteLine("C O M P U T E R   H A S   J O I N E D   T H E   B A T T L E");
+                Console.ForegroundColor = ConsoleColor.White;
+
+                Thread.Sleep(80);
+
+            }
+            Thread.Sleep(3000);
         }
     }
 }
